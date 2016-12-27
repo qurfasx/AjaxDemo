@@ -1,0 +1,63 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>用户名校验ajax</title>
+    <script type="text/javascript">
+        var xmlhttp;
+        function verify() {
+            var userName = document.getElementById("userName").value;
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+                if (xmlhttp.overrideMimeType)
+                    xmlhttp.overrideMimeType("text/xml")
+            } else if (window.ActiveXObject) {
+                var activexName = ["MSXML2.XMLHTTP", "Microsoft.XMLHTTP"];
+                for (var i = 0; i < activexName.length; i++) {
+                    try {
+                        xmlhttp = new ActiveXObject(activexName[i]);
+                        break;
+                    } catch (e) {
+                    }
+                }
+            }
+            if (!xmlhttp) {// 确认XMLHttpRequest对象创建成功
+                alert("XMLHttpRequest对象创建失败！");
+                return;
+            }
+            xmlhttp.onreadystatechange = callback;
+            xmlhttp.open("POST", "../xmlServer", true);
+            xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");//设置http的请求头
+            xmlhttp.send("name=" + userName); //POST方式发送数据
+        }
+        function callback() {  //回调函数
+            if (xmlhttp.readyState == 4) {//判断对象的状态是交互完成
+                if (xmlhttp.status == 200) {//判断http的交互是否成功
+                    //获取服务器端返回的数据
+                    var domObj = xmlhttp.responseXML;//使用responseXML的方式接受XML数据对象的Dom对象
+                    if (domObj) {   //从服务器端返回的数据的格式： <message>1231234</message>
+                        var messageNodes = domObj.getElementsByTagName("message");
+                        if (messageNodes.length > 0) {
+                            var textNode = messageNodes[0].firstChild;
+                            var responseMessage = textNode.nodeValue;
+                            var divNode = document.getElementById("result");
+                            //设置元素节点中的html内容
+                            divNode.innerHTML = responseMessage;
+                        } else {
+                            alert("XML数据格式错误，原始文本内容为:"+xmlhttp.responseText);
+                        }
+                    } else {
+                        alert("XML数据格式错误，原始文本内容为:" +xmlhttp.responseText);
+                    }
+                } else {
+                    alert("出错了");
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<input type="text" id="userName"/>
+<input type="button" value="校验" onclick="verify()">
+<div id="result"></div>
+</body>
+</html>

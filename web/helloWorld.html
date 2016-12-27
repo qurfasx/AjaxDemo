@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX Demo</title>
+    <script type="text/javascript">
+        var xmlhttp;
+        function create() {
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+                if (xmlhttp.overrideMimeType)
+                    xmlhttp.overrideMimeType("text/xml")
+            } else if (window.ActiveXObject) {
+                var activexName = ["MSXML2.XMLHTTP", "Microsoft.XMLHTTP"];
+                for (var i = 0; i < activexName.length; i++) {
+                    try {
+                        xmlhttp = new ActiveXObject(activexName[i]);
+                        break;
+                    } catch (e) {
+                    }
+                }
+                if (!xmlhttp) {
+                    alert("对象创建失败");
+                    return;
+                }
+            }
+        }
+        function callback() {
+            if(xmlhttp.readyState == 4){
+                if(xmlhttp.status == 200){
+                    document.getElementById("res").innerHTML=xmlhttp.responseText;
+                }
+            }
+        }
+        function ajaxRequest() {
+            create();
+            xmlhttp.open("GET","helloWorldServlet",true);
+            xmlhttp.onreadystatechange = callback;
+            xmlhttp.send(null);
+        }
+    </script>
+</head>
+<body>
+<button type="button" onclick="ajaxRequest();">AJAX请求</button>
+<div id="res"></div>
+</body>
+</html>
